@@ -1,20 +1,32 @@
-const fetchData = async (searchTerm) => {
-    const response = await axios.get('http://www.omdbapi.com/', {
-        params: {
-            apikey: '15ea7872',
-            s: searchTerm
-        }
-    });
-
-    if (response.data.Error) {
-        return [];
-    }
-
-    return response.data.Search;
-};
-
 createAutoComplete({
-    root: document.querySelector('.autocomplete')
+    root: document.querySelector('.autocomplete'),
+    renderOption(movie) {
+        const imgSrc = movie.Poster === 'N/A' ? 'https://media.istockphoto.com/id/1222357475/vector/image-preview-icon-picture-placeholder-for-website-or-ui-ux-design-vector-illustration.jpg?s=612x612&w=0&k=20&c=KuCo-dRBYV7nz2gbk4J9w1WtTAgpTdznHu55W9FjimE=' : movie.Poster;
+        return `
+            <img src="${imgSrc}" />
+            ${movie.Title} (${movie.Year})
+        `;
+    },
+    onOptionSelect(movie) {
+        onMovieSelect(movie);
+    },
+    inputValue(movie) {
+        return movie.Title;
+    },
+    async fetchData(searchTerm) {
+        const response = await axios.get('http://www.omdbapi.com/', {
+            params: {
+                apikey: '15ea7872',
+                s: searchTerm
+            }
+        });
+    
+        if (response.data.Error) {
+            return [];
+        }
+    
+        return response.data.Search;
+    }
 });
 
 const onMovieSelect = async (movie) => {
